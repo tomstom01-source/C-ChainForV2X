@@ -1,3 +1,8 @@
+# Extra gitignores:
+T2_exp/
+
+
+# Standard gitignore:
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[codz]
