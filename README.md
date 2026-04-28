@@ -101,10 +101,10 @@ python main.py
 
 ### Protocol Steps
 
-The current implementation covers Steps 1-3 of the TDBMS protocol (page 9 of the paper):
-   ✅ Verifying 	T = [d, σU(h(d))] by checking πU(σU(h(d))) ?= h(d)
-   ✅ Certification	of	T via σS(T) = [d, σS(σU(h(d)))]
-   ✅ Appending T into blocks as [n+1, σS(h(Tn)), σS(T)]
+    The current implementation covers Steps 1-3 of the TDBMS protocol (page 9 of the paper):
+    ✅ Verifying 	T = [d, σU(h(d))] by checking πU(σU(h(d))) ?= h(d)
+    ✅ Certification	of	T via σS(T) = [d, σS(σU(h(d)))]
+    ✅ Appending T into blocks as [n+1, σS(h(Tn)), σS(T)]
    
 ### TBD
 
