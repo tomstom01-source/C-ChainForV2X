@@ -1,7 +1,7 @@
 from transaction_and_key_generator import generate_mock_transactions_and_keys
 from chain_generator import generate_chain
-from chain_checker import check_chain
-from display_chain import display_chain_info
+from tests.chain_checker import check_chain
+from utilities.display_chain import display_chain_info
 
 
 def run_suite():

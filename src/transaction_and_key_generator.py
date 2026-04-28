@@ -3,8 +3,8 @@ import random
 import time
 import base64
 from datetime import datetime
-from hash_utilities import sha256_hash
-from key_utilities import sign_hashed_data
+from utilities.hash_utilities import sha256_hash
+from utilities.key_utilities import sign_hashed_data
 from cryptography.hazmat.primitives import serialization
 from cryptography.hazmat.primitives.asymmetric import rsa
 

@@ -2,7 +2,7 @@ import json
 import sqlite3
 import base64
 from cryptography.hazmat.primitives import serialization
-from key_utilities import verify_signature
+from utilities.key_utilities import verify_signature
 
 
 # Check chain continuity: πS(σS(h(prev_block))) ?= h(prev_block)

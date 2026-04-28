@@ -4,9 +4,9 @@ import json
 import base64
 from cryptography.hazmat.primitives import serialization
 from cryptography.hazmat.primitives.asymmetric import rsa
-from tdb_utilities import setup_tdb, get_last_block
-from key_utilities import get_public_key_for_id, verify_signature, sign_hashed_data
-from hash_utilities import sha256_hash
+from utilities.tdb_utilities import setup_tdb, get_last_block
+from utilities.key_utilities import get_public_key_for_id, verify_signature, sign_hashed_data
+from utilities.hash_utilities import sha256_hash
 
 
 
