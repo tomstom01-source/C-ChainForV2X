@@ -2,6 +2,7 @@ import json
 import random
 import time
 import base64
+import os
 from datetime import datetime
 from utilities.hash_utilities import sha256_hash
 from utilities.key_utilities import sign_hashed_data
@@ -64,20 +65,23 @@ def generate_mock_transactions_and_keys(transactions_filename, number_of_cars, t
                                  "signature": base64.b64encode(sign_hashed_data(private_key=private_key, 
                                                                                 hashed_data=sha256_hash(data))).decode("utf-8")})
     
+    # Ensure generated_data directory exists
+    os.makedirs("generated_data", exist_ok=True)
+    
     # Convert keys to a JSON file
-    with open("keys.json", "w") as f:
+    with open("generated_data/keys.json", "w") as f:
         json.dump(key_pairs, f)
 
-    print(f"Successfully generated {len(key_pairs)} key pairs in keys.json.")
+    print(f"Successfully generated {len(key_pairs)} key pairs in generated_data/keys.json.")
     
     # Shuffle transactions between cars
     random.shuffle(transactions)
 
     # Convert transactions to a JSON file
-    with open(transactions_filename, "w") as f:
+    with open(f"generated_data/{transactions_filename}", "w") as f:
         json.dump(transactions, f)
 
-    print(f"Successfully generated {len(transactions)} transactions in {transactions_filename}.")
+    print(f"Successfully generated {len(transactions)} transactions in generated_data/{transactions_filename}.")
 
 
 

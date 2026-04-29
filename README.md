@@ -24,10 +24,10 @@ This project implements the cryptographic chaining protocol defined in the "Prot
 - `chain_checker.py`: Chain continuity verification
   
 #### 4. **Storage**
-- `keys.json`: Vehicle RSA key pairs
-- `tdbms_keys.json`: TDBMS RSA key pair
-- `mock_transactions.json`: Generated V2X transaction data
-- `V2X_chain.db`: SQLite database containing the blockchain
+- `generated_data/keys.json`: Vehicle RSA key pairs
+- `generated_data/tdbms_keys.json`: TDBMS RSA key pair
+- `generated_data/mock_transactions.json`: Generated V2X transaction data
+- `generated_data/V2X_chain.db`: SQLite database containing the blockchain
 
 
 ### Transaction Flow
@@ -76,18 +76,15 @@ The system verifies continuity of the chain by checking:
 ## Usage
 
 ```python
-# Generate mock V2X transactions from cars
-python transaction_and_key_generator.py
+# To generate mock transactions, process them into the chain, and verify the chain
+python main.py -f transactions.json -c 50 -t 20
+# Where:
+#   -f: transaction output filename
+#   -c: number of cars
+#   -t: number of transactions per car
 
-# Process transactions and build chain
-python chain_generator.py
-
-# Verify chain continuity
-python chain_checker.py
-
-# To run all 3 above from top to bottom and adjust parameters
-python main.py
-
+# Alternatively, use:
+python main.py --help
 ```
 
 ## Implementation Notes
@@ -102,13 +99,13 @@ python main.py
 ### Protocol Steps
 
     The current implementation covers Steps 1-3 of the TDBMS protocol (page 9 of the paper):
-    ✅ Verifying 	T = [d, σU(h(d))] by checking πU(σU(h(d))) ?= h(d)
-    ✅ Certification	of	T via σS(T) = [d, σS(σU(h(d)))]
+    ✅ Verifying T = [d, σU(h(d))] by checking πU(σU(h(d))) ?= h(d)
+    ✅ Certification	of T via σS(T) = [d, σS(σU(h(d)))]
     ✅ Appending T into blocks as [n+1, σS(h(Tn)), σS(T)]
    
 ### TBD
 
-    ⚠️ Checking blocks in chain for not just continuity, but also payload integrity via πS(σS(σU(h(d)))) ?= σU(h(d)) while allowing RSA PSS for σU(h(d))
+    ⚠️ Checking blocks in chain for not just continuity, but also payload integrity via πS(σS(σU(h(d)))) ?= σU(h(d)) while allowing RSA-PSS for σU(h(d))
     ⚠️ Steps 4-5 of the TDBMS protocol (TC synchronization at cars)
     ⚠️ Simulation of nodes via SUMO instead of loading transactions from a file
     ⚠️ Performance optimization and benchmarking

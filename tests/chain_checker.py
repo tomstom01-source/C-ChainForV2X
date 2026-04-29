@@ -33,13 +33,13 @@ def check_continuity(cursor, block_id, signed_prev_block_hash, tdbms_public_key)
 def check_chain():
     
     # Load TDBMS public key
-    with open("tdbms_keys.json", "r") as f:
+    with open("generated_data/tdbms_keys.json", "r") as f:
         tdbms_keys = json.load(f)
     
     tdbms_public_key = serialization.load_pem_public_key(tdbms_keys['public_key'].encode('utf-8'))
     
     # Connect to database
-    connection = sqlite3.connect('V2X_chain.db')
+    connection = sqlite3.connect('generated_data/V2X_chain.db')
     cursor = connection.cursor()
     
     # Get all blocks in asc order
