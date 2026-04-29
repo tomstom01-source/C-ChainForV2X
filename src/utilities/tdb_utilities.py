@@ -5,8 +5,8 @@ import os
 
 def setup_tdb():
     # Ensure generated_data directory exists at project root
-    os.makedirs("../generated_data", exist_ok=True)
-    connection = sqlite3.connect('../generated_data/V2X_chain.db')
+    os.makedirs("generated_data", exist_ok=True)
+    connection = sqlite3.connect('generated_data/V2X_chain.db')
     cursor = connection.cursor()
     # Each block (or "chain link") consists of:
     # - id (the block id)

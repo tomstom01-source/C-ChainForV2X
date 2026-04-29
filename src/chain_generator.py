@@ -17,9 +17,9 @@ from utilities.hash_utilities import sha256_hash
 # Steps 4 and 5 in the protocol (synchronizing the TC at U's and V's sides) are not implemented in this simple simulation.
 def process_transactions(transactions_filename, connection, tdbms_key_pair):
     skipped_transactions = 0
-    with open(f"../generated_data/{transactions_filename}", "r") as f:
+    with open(f"generated_data/{transactions_filename}", "r") as f:
         transactions = json.load(f)
-    with open("../generated_data/keys.json", "r") as f:
+    with open("generated_data/keys.json", "r") as f:
         keys = json.load(f)
     tdbms_private_key = serialization.load_pem_private_key(tdbms_key_pair["private_key"].encode('utf-8'), password=None)
     cursor = connection.cursor()
@@ -43,6 +43,7 @@ def process_transactions(transactions_filename, connection, tdbms_key_pair):
             INSERT INTO transaction_blocks (signed_prev_block_hash, signed_transaction) 
                        VALUES (?, ?)
         ''', (Genesis_block["signed_prev_block_hash"], Genesis_block["signed_transaction"]))
+        connection.commit()
 
     for transaction in transactions:
         data = transaction["data"]
@@ -88,25 +89,41 @@ def process_transactions(transactions_filename, connection, tdbms_key_pair):
 
 def generate_chain(transactions_filename):
     connection = setup_tdb()
-
-    #TDBMS keys
-    private_key = rsa.generate_private_key(public_exponent=65537, key_size=2048)
-    public_key = private_key.public_key()
-    tdbms_key_pair = {"private_key": private_key.private_bytes(
-                                        encoding=serialization.Encoding.PEM,
-                                        format=serialization.PrivateFormat.PKCS8,
-                                        encryption_algorithm=serialization.NoEncryption()
-                                        ).decode('utf-8'), 
-                        "public_key": public_key.public_bytes(
-                                        encoding=serialization.Encoding.PEM,
-                                        format=serialization.PublicFormat.SubjectPublicKeyInfo
-                                        ).decode('utf-8')}
-    # Ensure generated_data directory exists at project root
-    os.makedirs("../generated_data", exist_ok=True)
     
-    with open("../generated_data/tdbms_keys.json", "w") as f:
-        json.dump(tdbms_key_pair, f)
-    print("Successfully generated TDBMS key pair in ../generated_data/tdbms_keys.json.")
+    # Check if database is empty (no Genesis block)
+    cursor = connection.cursor()
+    cursor.execute("SELECT COUNT(*) FROM transaction_blocks")
+    
+    # Ensure generated_data directory exists at project root
+    os.makedirs("generated_data", exist_ok=True)
+    
+    if cursor.fetchone()[0] == 0:
+        # Generate new TDBMS keys for empty database
+        private_key = rsa.generate_private_key(public_exponent=65537, key_size=2048)
+        public_key = private_key.public_key()
+        tdbms_key_pair = {"private_key": private_key.private_bytes(
+                                            encoding=serialization.Encoding.PEM,
+                                            format=serialization.PrivateFormat.PKCS8,
+                                            encryption_algorithm=serialization.NoEncryption()
+                                            ).decode('utf-8'), 
+                            "public_key": public_key.public_bytes(
+                                            encoding=serialization.Encoding.PEM,
+                                            format=serialization.PublicFormat.SubjectPublicKeyInfo
+                                            ).decode('utf-8')}
+        
+        with open("generated_data/tdbms_keys.json", "w") as f:
+            json.dump(tdbms_key_pair, f)
+        print("Successfully generated new TDBMS key pair in generated_data/tdbms_keys.json.")
+    else:
+        # Load existing TDBMS keys
+        try:
+            with open("generated_data/tdbms_keys.json", "r") as f:
+                tdbms_key_pair = json.load(f)
+            print("Loaded existing TDBMS key pair from generated_data/tdbms_keys.json.")
+        except FileNotFoundError:
+            print("Error: TDBMS keys file not found but database exists. Cannot continue.")
+            connection.close()
+            return
     
     process_transactions(transactions_filename=transactions_filename, connection=connection, tdbms_key_pair = tdbms_key_pair)
     
