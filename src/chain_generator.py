@@ -17,9 +17,9 @@ from utilities.hash_utilities import sha256_hash
 # Steps 4 and 5 in the protocol (synchronizing the TC at U's and V's sides) are not implemented in this simple simulation.
 def process_transactions(transactions_filename, connection, tdbms_key_pair):
     skipped_transactions = 0
-    with open(f"generated_data/{transactions_filename}", "r") as f:
+    with open(f"../generated_data/{transactions_filename}", "r") as f:
         transactions = json.load(f)
-    with open("generated_data/keys.json", "r") as f:
+    with open("../generated_data/keys.json", "r") as f:
         keys = json.load(f)
     tdbms_private_key = serialization.load_pem_private_key(tdbms_key_pair["private_key"].encode('utf-8'), password=None)
     cursor = connection.cursor()
@@ -101,12 +101,12 @@ def generate_chain(transactions_filename):
                                         encoding=serialization.Encoding.PEM,
                                         format=serialization.PublicFormat.SubjectPublicKeyInfo
                                         ).decode('utf-8')}
-    # Ensure generated_data directory exists
-    os.makedirs("generated_data", exist_ok=True)
+    # Ensure generated_data directory exists at project root
+    os.makedirs("../generated_data", exist_ok=True)
     
-    with open("generated_data/tdbms_keys.json", "w") as f:
+    with open("../generated_data/tdbms_keys.json", "w") as f:
         json.dump(tdbms_key_pair, f)
-    print("Successfully generated TDBMS key pair in generated_data/tdbms_keys.json.")
+    print("Successfully generated TDBMS key pair in ../generated_data/tdbms_keys.json.")
     
     process_transactions(transactions_filename=transactions_filename, connection=connection, tdbms_key_pair = tdbms_key_pair)
     

@@ -1,7 +1,7 @@
 from cryptography.hazmat.primitives import hashes, serialization
 from cryptography.hazmat.primitives.asymmetric import padding, utils
 from cryptography.exceptions import InvalidSignature
-from hash_utilities import sha256_hash
+from utilities.hash_utilities import sha256_hash
 
 
 # Sign the hashed data using RSA-PSS with SHA-256, using max length salt across the entire hash to prevent signature forgery

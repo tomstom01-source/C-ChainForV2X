@@ -77,14 +77,14 @@ The system verifies continuity of the chain by checking:
 
 ```python
 # To generate mock transactions, process them into the chain, and verify the chain
-python main.py -f transactions.json -c 50 -t 20
+python src/main.py -f transactions.json -c 50 -t 20
 # Where:
 #   -f: transaction output filename
 #   -c: number of cars
 #   -t: number of transactions per car
 
 # Alternatively, use:
-python main.py --help
+python src/main.py --help
 ```
 
 ## Implementation Notes

@@ -2,20 +2,15 @@ import sys
 import argparse
 from transaction_and_key_generator import generate_mock_transactions_and_keys
 from chain_generator import generate_chain
-from tests.chain_checker import check_chain
+from verification.chain_checker import check_chain
 from utilities.display_chain import display_chain_info
 
 
 def cli_parser():
-    """Parse command line arguments for C-Chain parameters.
-    
-    Returns:
-        dict: Parsed arguments with defaults
-    """
     parser = argparse.ArgumentParser(
         description='C-Chain for V2X',
         formatter_class=argparse.RawDescriptionHelpFormatter,
-        epilog='Example: python main.py -f transactions.json -c 50 -t 20'
+        epilog='Example: src/python main.py -f transactions.json -c 50 -t 20'
     )
     
     parser.add_argument(
@@ -28,15 +23,15 @@ def cli_parser():
     parser.add_argument(
         '-c', '--cars',
         type=int,
-        default=100,
-        help='Number of cars (default: 100)'
+        default=10,
+        help='Number of cars (default: 10)'
     )
     
     parser.add_argument(
         '-t', '--transactions',
         type=int,
-        default=100,
-        help='Number of transactions per car (default: 100)'
+        default=10,
+        help='Number of transactions per car (default: 10)'
     )
     
     parser.add_argument(
@@ -67,33 +62,6 @@ def cli_parser():
         sys.exit(1)
     except ValueError as e:
         print(f"Invalid argument: {e}")
-        sys.exit(1)
-
-
-if __name__ == "__main__":
-    try:
-        # Parse command line arguments
-        params = cli_parser()
-        
-        if params['verbose']:
-            print("Parsed parameters:")
-            print(f"  Transactions file: {params['transactions_filename']}")
-            print(f"  Number of cars: {params['number_of_cars']}")
-            print(f"  Transactions per car: {params['transactions_per_car']}")
-            print()
-        
-        # Generates mock transactions, books them into a chain and tests chain continuity
-        run_suite(
-            transactions_filename=params['transactions_filename'], 
-            number_of_cars=params['number_of_cars'], 
-            transactions_per_car=params['transactions_per_car']
-        )
-        
-    except KeyboardInterrupt:
-        print("\nOperation cancelled by user.")
-        sys.exit(0)
-    except Exception as e:
-        print(f"Unexpected error: {e}")
         sys.exit(1)
 
 
@@ -128,3 +96,22 @@ def run_suite(transactions_filename, number_of_cars, transactions_per_car):
     print("\n" + "=" * 100)
     print("CHECKED CHAIN")
     print("=" * 100)
+
+
+if __name__ == "__main__":
+    # Parse command line arguments
+    params = cli_parser()
+    
+    if params['verbose']:
+        print("Parsed parameters:")
+        print(f"  Transactions file: {params['transactions_filename']}")
+        print(f"  Number of cars: {params['number_of_cars']}")
+        print(f"  Transactions per car: {params['transactions_per_car']}")
+        print()
+    
+    # Generates mock transactions, books them into a chain and tests chain continuity
+    run_suite(
+        transactions_filename=params['transactions_filename'], 
+        number_of_cars=params['number_of_cars'], 
+        transactions_per_car=params['transactions_per_car']
+    )

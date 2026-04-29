@@ -1,5 +1,6 @@
 # Extra gitignores:
 T2_exp/
+generated_data/
 
 
 # Standard gitignore:

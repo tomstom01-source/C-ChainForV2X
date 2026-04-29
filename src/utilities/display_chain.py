@@ -3,7 +3,7 @@ import sqlite3
 
 
 def display_chain_info():
-    connection = sqlite3.connect('generated_data/V2X_chain.db')
+    connection = sqlite3.connect('../generated_data/V2X_chain.db')
     cursor = connection.cursor()
     
     cursor.execute('SELECT id, signed_prev_block_hash, signed_transaction FROM transaction_blocks ORDER BY id ASC')
