@@ -1,10 +1,12 @@
 # C-ChainForV2X
 
-An initial implementation of the C-Chain system for secure logging and verification of V2X (Vehicle-to-Everything) communication, as described in the C-ChainPaper.pdf.
+An initial implementation of the C-Chain system for secure logging and verification of V2X (Vehicle-to-Everything) communication, as described in C-ChainPaper.pdf.
 
 ## Overview
 
-This project implements the cryptographic chaining protocol defined in the "Protocol of TDBMS" section of the C-ChainPaper. The system provides immutable and verifiable logging of V2X transactions with cryptographic guarantees of integrity and non-repudiation.
+This project partially implements the cryptographic chaining protocol defined in the "Protocol of TDBMS" section of the C-Chain paper. The system provides immutable and verifiable logging of V2X transactions with cryptographic guarantees of integrity and non-repudiation.
+
+TODO: transaction structure, output example
 
 ## Architecture
 
@@ -76,12 +78,14 @@ The system verifies continuity of the chain by checking:
 ## Usage
 
 ```python
-# To generate mock transactions, process them into the chain, and verify the chain
-python src/main.py -f transactions.json -c 50 -t 20
-# Where:
-#   -f: transaction output filename
+# Available arguments:
+#   -f: transactions output filename
 #   -c: number of cars
 #   -t: number of transactions per car
+
+# An example to generate mock transactions, process them into the chain, and verify the chain
+python src/main.py -f transactions.json -c 50 -t 20
+
 
 # Alternatively, use:
 python src/main.py --help
@@ -106,6 +110,7 @@ python src/main.py --help
 ### TBD
 
     ⚠️ Checking blocks in chain for not just continuity, but also payload integrity via πS(σS(σU(h(d)))) ?= σU(h(d)) while allowing RSA-PSS for σU(h(d))
+    ⚠️ UDB with CryptIDs
     ⚠️ Steps 4-5 of the TDBMS protocol (TC synchronization at cars)
     ⚠️ Simulation of nodes via SUMO instead of loading transactions from a file
     ⚠️ Performance optimization and benchmarking

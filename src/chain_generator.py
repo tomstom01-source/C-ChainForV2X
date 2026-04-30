@@ -45,6 +45,8 @@ def process_transactions(transactions_filename, connection, tdbms_key_pair):
         ''', (Genesis_block["signed_prev_block_hash"], Genesis_block["signed_transaction"]))
         connection.commit()
 
+    print(f"Booking {len(transactions)} transactions into chain...")
+
     for transaction in transactions:
         data = transaction["data"]
         

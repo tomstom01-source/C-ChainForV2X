@@ -47,7 +47,7 @@ def check_chain():
     # Batch-process here for scaling
     blocks = cursor.fetchall()
     
-    print(f"Found {len(blocks)} blocks in chain.")
+    print(f"Checking {len(blocks)} blocks in chain...")
     
     validated_blocks = 0
     for block_id, signed_prev_block_hash, _ in blocks:
