@@ -8,9 +8,9 @@ This project partially implements the cryptographic chaining protocol defined in
 
 TODO: transaction structure, output example
 
-## Architecture
+## Architecture & Control Flow
 
-### Key Components
+### Components Summary
 
 #### 1. **Utilities**
 - `hash_utilities.py`: SHA-256 canonicalization and hashing
@@ -32,7 +32,7 @@ TODO: transaction structure, output example
 - `generated_data/V2X_chain.db`: SQLite database containing the blockchain
 
 
-### Transaction Flow
+### Flow Summary
 
 1. **Vehicle Generation**: Vehicles (cars) generate V2X transactions containing:
    - GPS coordinates (lat, lon)
@@ -70,6 +70,13 @@ TODO: transaction structure, output example
 3. **Integrity**: Any tampering breaks the cryptographic chain
 4. **Authenticity**: Vehicle signatures ensure transaction authenticity
 
+### Cryptographic Standards
+
+- **Hash Algorithm**: SHA-256
+- **Signature Scheme**: RSA-PSS with maximum salt length
+- **Key Size**: 2048-bit RSA keys
+- **Encoding**: PEM format for keys, Base64 for signatures
+
 ### Verification Process
 
 The system verifies continuity of the chain by checking:
@@ -91,14 +98,11 @@ python src/main.py -f transactions.json -c 50 -t 20
 python src/main.py --help
 ```
 
+## Console Output Example
+
+![Terminal Output](assets/images/console-output-example.png)
+
 ## Implementation Notes
-
-### Cryptographic Standards
-
-- **Hash Algorithm**: SHA-256
-- **Signature Scheme**: RSA-PSS with maximum salt length
-- **Key Size**: 2048-bit RSA keys
-- **Encoding**: PEM format for keys, Base64 for signatures
 
 ### Protocol Steps
 
