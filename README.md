@@ -100,7 +100,7 @@ python src/main.py --help
 
 ## Console Output Example
 
-![Terminal Output](assets/images/console-output-example.png)
+![Terminal Output](assets/images/console_output_example.png)
 
 ## Implementation Notes
 
