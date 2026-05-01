@@ -4,7 +4,7 @@ An initial implementation of the C-Chain system for secure logging and verificat
 
 ## Overview
 
-Unlike traditional blockchains that suffer from probabilistic finality, latency and poor scalability, C-chain addresses these metrics critical to V2X communication via a TDBMS protocol that allows for immediate settlement of tamper-proof V2X transactions for:
+Unlike traditional blockchains that suffer from probabilistic finality, high latency and poor scalability, C-chain addresses these metrics critical to V2X communication via a TDBMS protocol that allows immediate settlement of tamper-proof V2X transactions for:
    - Forensics: Non-repudiable evidence for accident reconstruction.
    - Diagnostics: Verifiable telemetry history for sensor and hardware auditing.
    - Coordination: A cryptographically ordered "source of truth" for real-time traffic orchestration.
@@ -12,34 +12,36 @@ Unlike traditional blockchains that suffer from probabilistic finality, latency 
 ## Core Features
 
 - Strict Serialization: Every block $T_n$ is cryptographically linked to $h(T_{n-1})$ via the TDBMS signature $\sigma_s$.
-- Identity Binding: Telemetry is bound to the user via RSA-PSS signatures, ensuring non-repudiation.
-- ACID Compliance: Uses SQLite as the underlying TDB to guarantee durability and atomicity.
+- Identity Binding: Telemetry is bound to the sender and its logging to the TDBMS via RSA-PSS signatures, ensuring non-repudiation on both levels.
+- ACID Compliance: Guaranteed by the usage of an appropriate TDB and application layer TDBMS.
+
+Features discussed so far have only been partially implemented. Details below, however, describe the current state of implementation.
 
 ## Architecture & Control Flow
 
 ### Components Summary
 
-#### 1. **Utilities**
-- `hash_utilities.py`: SHA-256 canonicalization and hashing
-- `key_utilities.py`: RSA-PSS signing and verification (π(σ(h(d))) ?= h(d))
-- `tdb_utilities.py`: SQLite database management
-- `display_chain.py`: Chain visualization and inspection
+1. **Utilities**
+   - `hash_utilities.py`: SHA-256 canonicalization and hashing
+   - `key_utilities.py`: RSA-PSS signing and verification (π(σ(h(d))) ?= h(d))
+   - `tdb_utilities.py`: SQLite database management
+   - `display_chain.py`: Chain visualization and inspection
 
-#### 2. **Generators**
-- `transaction_and_key_generator.py`: Generation of V2X transactions and RSA key pairs per vehicle
-- `chain_generator.py`: 
-  - Transaction validation: πU(σU(h(d))) ?= h(d) in T = [d, σU(h(d))]
-  - TDBMS signing: σS(T) = [d, σS(σU(h(d)))]
-  - Chain creation: Using blocks of format: [n+1, σS(h(Tn)), σS(T)]
+2. **Generators**
+   - `transaction_and_key_generator.py`: Generation of V2X transactions and RSA key pairs per vehicle
+   - `chain_generator.py`: 
+     - Transaction validation: πU(σU(h(d))) ?= h(d) in T = [d, σU(h(d))]
+     - TDBMS signing: σS(T) = [d, σS(σU(h(d)))]
+     - Chain creation: Using blocks of format: [n+1, σS(h(Tn)), σS(T)]
 
-#### 3. **Verification**
-- `chain_checker.py`: Chain continuity verification: πS(σS(h(prev_block))) ?= h(prev_block) per block
+3. **Verification**
+   - `chain_checker.py`: Chain continuity verification: πS(σS(h(prev_block))) ?= h(prev_block) per block
   
-#### 4. **Storage**
-- `generated_data/keys.json`: Vehicles' RSA key pairs
-- `generated_data/tdbms_keys.json`: TDBMS RSA key pair
-- `generated_data/mock_transactions.json`: Generated V2X transaction data
-- `generated_data/V2X_chain.db`: SQLite database containing the chain
+4. **Storage**
+   - `generated_data/keys.json`: Vehicles' RSA key pairs
+   - `generated_data/tdbms_keys.json`: TDBMS RSA key pair
+   - `generated_data/mock_transactions.json`: Generated V2X transaction data
+   - `generated_data/V2X_chain.db`: SQLite database containing the chain
 
 
 ### Flow Summary
@@ -62,11 +64,16 @@ Unlike traditional blockchains that suffer from probabilistic finality, latency 
 ### Block Structure
    
    ```json
+   Non-Genesis blocks:
    {
      "id": block_number,
      "signed_prev_block_hash": σS(h(previous_block with id = (block_number - 1))),
      "signed_transaction": {
-       "data": {"id": vehicle_id, "lat": latitude, "lon": longitude, "vel": velocity, "ts": timestamp},
+       "data": {"id": vehicle_id, 
+       "lat": latitude, 
+       "lon": longitude, 
+       "vel": velocity, 
+       "ts": timestamp},
        "signature": σS(h(σU(h(data))))
      }
    }
@@ -80,23 +87,7 @@ Unlike traditional blockchains that suffer from probabilistic finality, latency 
        "signature": σS(h(data))
      }
    }
-
-
    ```
-
-## Security Properties
-
-### Cryptographic Guarantees
-
-1. **Immutability**: Each block is cryptographically linked to its predecessor
-2. **Non-repudiation**: TDBMS and user signatures provide undeniable proof of transaction creation and processing
-3. **Integrity**: Tampering breaks the cryptographic chain
-
-### Cryptographic Standards
-
-- **Hash Algorithm**: SHA-256
-- **Signature Scheme**: RSA-PSS with maximum salt length
-- **Key Size**: 2048-bit RSA keys
 
 ## Usage
 
@@ -133,5 +124,7 @@ python src/main.py --help
     ⚠️ UDB with CryptIDs
     ⚠️ Simulation of nodes via SUMO instead of loading transactions from a file
     ⚠️ Steps 4-5 of the TDBMS protocol (TC synchronization at cars)
+    ⚠️ Concurrency control
+    ⚠️ Atomicity
     ⚠️ PostgreSQL 
     ⚠️ Performance optimization and benchmarking
