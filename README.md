@@ -1,12 +1,19 @@
 # C-ChainForV2X
 
-An initial implementation of the C-Chain system for secure logging and verification of V2X (Vehicle-to-Everything) communication, as described in C-ChainPaper.pdf.
+An initial implementation of the C-Chain system for secure logging and verification of V2X (Vehicle-to-Everything) telemetry, according to the protocol described in C-ChainPaper.pdf, incorporating identity binding and strict serialization.
 
 ## Overview
 
-This project partially implements the cryptographic chaining protocol defined in the "Protocol of TDBMS" section of the C-Chain paper. The system provides immutable and verifiable logging of V2X transactions with cryptographic guarantees of integrity and non-repudiation.
+Unlike traditional blockchains that suffer from probabilistic finality, latency and poor scalability, C-chain addresses these metrics critical to V2X communication via a TDBMS protocol that allows for immediate settlement of tamper-proof V2X transactions for:
+   - Forensics: Non-repudiable evidence for accident reconstruction.
+   - Diagnostics: Verifiable telemetry history for sensor and hardware auditing.
+   - Coordination: A cryptographically ordered "source of truth" for real-time traffic orchestration.
+  
+## Core Features
 
-TODO: transaction structure, output example
+- Strict Serialization: Every block $T_n$ is cryptographically linked to $h(T_{n-1})$ via the TDBMS signature $\sigma_s$.
+- Identity Binding: Telemetry is bound to the user via RSA-PSS signatures, ensuring non-repudiation.
+- ACID Compliance: Uses SQLite as the underlying TDB to guarantee durability and atomicity.
 
 ## Architecture & Control Flow
 
@@ -14,73 +21,82 @@ TODO: transaction structure, output example
 
 #### 1. **Utilities**
 - `hash_utilities.py`: SHA-256 canonicalization and hashing
-- `key_utilities.py`: RSA-PSS signature generation/verification
+- `key_utilities.py`: RSA-PSS signing and verification (π(σ(h(d))) ?= h(d))
 - `tdb_utilities.py`: SQLite database management
 - `display_chain.py`: Chain visualization and inspection
 
 #### 2. **Generators**
-- `transaction_and_key_generator.py`: Mock V2X transaction simulation
-- `chain_generator.py`: Transaction validation and block creation
+- `transaction_and_key_generator.py`: Generation of V2X transactions and RSA key pairs per vehicle
+- `chain_generator.py`: 
+  - Transaction validation: πU(σU(h(d))) ?= h(d) in T = [d, σU(h(d))]
+  - TDBMS signing: σS(T) = [d, σS(σU(h(d)))]
+  - Chain creation: Using blocks of format: [n+1, σS(h(Tn)), σS(T)]
 
 #### 3. **Verification**
-- `chain_checker.py`: Chain continuity verification
+- `chain_checker.py`: Chain continuity verification: πS(σS(h(prev_block))) ?= h(prev_block) per block
   
 #### 4. **Storage**
-- `generated_data/keys.json`: Vehicle RSA key pairs
+- `generated_data/keys.json`: Vehicles' RSA key pairs
 - `generated_data/tdbms_keys.json`: TDBMS RSA key pair
 - `generated_data/mock_transactions.json`: Generated V2X transaction data
-- `generated_data/V2X_chain.db`: SQLite database containing the blockchain
+- `generated_data/V2X_chain.db`: SQLite database containing the chain
 
 
 ### Flow Summary
 
-1. **Vehicle Generation**: Vehicles (cars) generate V2X transactions containing:
+1. **Transaction Generation**:  V2X transactions containing:
+   - Vehicle ID
    - GPS coordinates (lat, lon)
-   - Velocity data
+   - Velocity
    - Timestamp
-   - Digital signature using vehicle's private key
 
-2. **TDBMS Validation**: The TDBMS:
-   - Verifies vehicle signatures using public keys
-   - Signs the vehicle's signature with TDBMS private key
-   - Creates a new block linked to the previous block
+2. **Chain Creation by TDBMS**:
+   - Verification of vehicle signatures using respective public keys
+   - Signing of the transaction with TDBMS private key
+   - Creation of a new block linked to the previous block in the existing chain
 
-3. **Block Structure**: Each block contains:
+3. **Chain Display & Verification**:
+   - Console display of first and last 5 blocks
+   - Verification of links between blocks 
+
+### Block Structure
+   
    ```json
    {
      "id": block_number,
-     "signed_prev_block_hash": "TDBMS_signature_of_previous_block_hash",
+     "signed_prev_block_hash": σS(h(previous_block with id = (block_number - 1))),
      "signed_transaction": {
-       "data": "original_v2x_transaction_data",
-       "signature": "TDBMS_signature_over_vehicle_signature"
+       "data": {"id": vehicle_id, "lat": latitude, "lon": longitude, "vel": velocity, "ts": timestamp},
+       "signature": σS(h(σU(h(data))))
      }
    }
-   ```
 
-4. **Genesis Block**: The first block (ID=0) with:
-   - `signed_prev_block_hash = "0"*64`
-   - Creation timestamp and TDBMS public key reference
+   Genesis block:
+   {
+     "id": 1,
+     "signed_prev_block_hash": "0" * 64,
+     "signed_transaction": {
+       "data": "Genesis block created at (YYYY-MM-DDTHH:MM:SS.ssssss) by owner of public key (public_key of TDBMS: πS)",
+       "signature": σS(h(data))
+     }
+   }
+
+
+   ```
 
 ## Security Properties
 
 ### Cryptographic Guarantees
 
 1. **Immutability**: Each block is cryptographically linked to its predecessor
-2. **Non-repudiation**: TDBMS signatures provide undeniable proof of transaction processing
-3. **Integrity**: Any tampering breaks the cryptographic chain
-4. **Authenticity**: Vehicle signatures ensure transaction authenticity
+2. **Non-repudiation**: TDBMS and user signatures provide undeniable proof of transaction creation and processing
+3. **Integrity**: Tampering breaks the cryptographic chain
 
 ### Cryptographic Standards
 
 - **Hash Algorithm**: SHA-256
 - **Signature Scheme**: RSA-PSS with maximum salt length
 - **Key Size**: 2048-bit RSA keys
-- **Encoding**: PEM format for keys, Base64 for signatures
-
-### Verification Process
-
-The system verifies continuity of the chain by checking:
-`πS(σS(h(prev_block))) ?= h(prev_block)`
 
 ## Usage
 
@@ -102,20 +118,20 @@ python src/main.py --help
 
 ![Terminal Output](assets/images/console_output_example.png)
 
-## Implementation Notes
+## Implementation Progress
 
-### Protocol Steps
+### Steps Implemented
 
     The current implementation covers Steps 1-3 of the TDBMS protocol (page 9 of the paper):
     ✅ Verifying T = [d, σU(h(d))] by checking πU(σU(h(d))) ?= h(d)
     ✅ Certification	of T via σS(T) = [d, σS(σU(h(d)))]
     ✅ Appending T into blocks as [n+1, σS(h(Tn)), σS(T)]
    
-### TBD
+### To Be Implemented
 
     ⚠️ Checking blocks in chain for not just continuity, but also payload integrity via πS(σS(σU(h(d)))) ?= σU(h(d)) while allowing RSA-PSS for σU(h(d))
     ⚠️ UDB with CryptIDs
-    ⚠️ Steps 4-5 of the TDBMS protocol (TC synchronization at cars)
     ⚠️ Simulation of nodes via SUMO instead of loading transactions from a file
-    ⚠️ Performance optimization and benchmarking
+    ⚠️ Steps 4-5 of the TDBMS protocol (TC synchronization at cars)
     ⚠️ PostgreSQL 
+    ⚠️ Performance optimization and benchmarking

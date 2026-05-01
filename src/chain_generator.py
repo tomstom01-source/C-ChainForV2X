@@ -27,7 +27,7 @@ def process_transactions(transactions_filename, connection, tdbms_key_pair):
     # Create a Genesis block if chain doesn't exist yet
     # Genesis block : {"id": 1, "signed_prev_block_hash": "0" * 64
     #                           , "signed_transaction": {d, σS(h(d)}}
-    # where d = "Genesis block created at (YYYY-MM-DDTHH:MM:SS.ssssss) by owner of public key (public_key of TDBMS, πS)"
+    # where d = "Genesis block created at (YYYY-MM-DDTHH:MM:SS.ssssss) by owner of public key (public_key of TDBMS: πS)"
     # "signed_transaction": {d, σS(h(d)} in the Genesis block allows non-repudiation of TDBMS for creating the Genesis block 
     # and thereby, the chain
     cursor.execute("SELECT COUNT(*) FROM transaction_blocks")

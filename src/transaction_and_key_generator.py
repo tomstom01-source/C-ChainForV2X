@@ -82,9 +82,3 @@ def generate_mock_transactions_and_keys(transactions_filename, number_of_cars, t
         json.dump(transactions, f)
 
     print(f"Successfully generated {len(transactions)} transactions in generated_data/{transactions_filename}.")
-
-
-
-if __name__ == "__main__":
-    # Set default parameters for direct testing (without importing)
-    generate_mock_transactions_and_keys(transactions_filename="mock_transactions.json", number_of_cars=100, transactions_per_car=10)
