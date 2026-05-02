@@ -24,17 +24,17 @@ def process_transactions(transactions_filename, connection, tdbms_key_pair):
     tdbms_private_key = serialization.load_pem_private_key(tdbms_key_pair["private_key"].encode('utf-8'), password=None)
     cursor = connection.cursor()
 
-    # Create a Genesis block if chain doesn't exist yet
+    # Create a genesis block if chain doesn't exist yet
     # Genesis block : {"id": 1, "signed_prev_block_hash": "0" * 64
     #                           , "signed_transaction": {d, σS(h(d)}}
     # where d = "Genesis block created at (YYYY-MM-DDTHH:MM:SS.ssssss) by owner of public key (public_key of TDBMS: πS)"
-    # "signed_transaction": {d, σS(h(d)} in the Genesis block allows non-repudiation of TDBMS for creating the Genesis block 
+    # "signed_transaction": {d, σS(h(d)} in the genesis block allows non-repudiation of TDBMS for creating the genesis block 
     # and thereby, the chain
     cursor.execute("SELECT COUNT(*) FROM transaction_blocks")
     if cursor.fetchone()[0] == 0:
-        print("Creating Genesis block.")
+        print("Creating genesis block.")
         d = f"Genesis block created at {datetime.fromtimestamp(time.time()).strftime("%Y-%m-%dT%H:%M:%S.%f")} by owner of public key {tdbms_key_pair['public_key']}"
-        Genesis_block = {"signed_prev_block_hash": "0" * 64,
+        genesis_block = {"signed_prev_block_hash": "0" * 64,
                          "signed_transaction": json.dumps({"data": d, 
                                         "signature": base64.b64encode(sign_hashed_data(private_key=tdbms_private_key, 
                                                         hashed_data=sha256_hash(d))).decode('utf-8')}, 
@@ -42,7 +42,7 @@ def process_transactions(transactions_filename, connection, tdbms_key_pair):
         cursor.execute('''
             INSERT INTO transaction_blocks (signed_prev_block_hash, signed_transaction) 
                        VALUES (?, ?)
-        ''', (Genesis_block["signed_prev_block_hash"], Genesis_block["signed_transaction"]))
+        ''', (genesis_block["signed_prev_block_hash"], genesis_block["signed_transaction"]))
         connection.commit()
 
     print(f"Booking {len(transactions)} transactions into chain...")
@@ -92,7 +92,7 @@ def process_transactions(transactions_filename, connection, tdbms_key_pair):
 def generate_chain(transactions_filename):
     connection = setup_tdb()
     
-    # Check if database is empty (no Genesis block)
+    # Check if database is empty (no genesis block)
     cursor = connection.cursor()
     cursor.execute("SELECT COUNT(*) FROM transaction_blocks")
     

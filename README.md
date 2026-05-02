@@ -1,6 +1,6 @@
 # C-ChainForV2X
 
-An initial implementation of the C-Chain system for secure logging and verification of V2X (Vehicle-to-Everything) telemetry, according to the protocol described in C-ChainPaper.pdf, incorporating identity binding and strict serialization.
+An initial implementation of the C-Chain system for secure logging and verification of V2X (Vehicle-to-Everything) telemetry, according to the protocol described in C-ChainPaper.pdf.
 
 ## Overview
 
@@ -15,7 +15,9 @@ Unlike traditional blockchains that suffer from probabilistic finality, high lat
 - Identity Binding: Telemetry is bound to the sender and its logging to the TDBMS via RSA-PSS signatures, ensuring non-repudiation on both levels.
 - ACID Compliance: Guaranteed by the usage of an appropriate TDB and application layer TDBMS.
 
+
 Features discussed so far have only been partially implemented. Details below, however, describe the current state of implementation.
+
 
 ## Architecture & Control Flow
 
@@ -64,7 +66,7 @@ Features discussed so far have only been partially implemented. Details below, h
 ### Block Structure
    
    ```json
-   Non-Genesis blocks:
+   Non-genesis blocks:
    {
      "id": block_number,
      "signed_prev_block_hash": σS(h(previous_block with id = (block_number - 1))),
@@ -92,10 +94,10 @@ Features discussed so far have only been partially implemented. Details below, h
 ## Usage
 
 ```python
-# Available arguments:
-#   -f: transactions output filename
-#   -c: number of cars
-#   -t: number of transactions per car
+# Available arguments (all optional):
+#   -f: transactions output filename (default: mock_transactions.json)
+#   -c: number of cars (default: 10)
+#   -t: number of transactions per car (default: 10)
 
 # An example to generate mock transactions, process them into the chain, and verify the chain
 python src/main.py -f transactions.json -c 50 -t 20
@@ -115,7 +117,7 @@ python src/main.py --help
 
     The current implementation covers Steps 1-3 of the TDBMS protocol (page 9 of the paper):
     ✅ Verifying T = [d, σU(h(d))] by checking πU(σU(h(d))) ?= h(d)
-    ✅ Certification	of T via σS(T) = [d, σS(σU(h(d)))]
+    ✅ Certification of T via σS(T) = [d, σS(σU(h(d)))]
     ✅ Appending T into blocks as [n+1, σS(h(Tn)), σS(T)]
    
 ### To Be Implemented
@@ -125,6 +127,7 @@ python src/main.py --help
     ⚠️ Simulation of nodes via SUMO instead of loading transactions from a file
     ⚠️ Steps 4-5 of the TDBMS protocol (TC synchronization at cars)
     ⚠️ Concurrency control
+    ⚠️ Verification of protocol and testing
     ⚠️ Atomicity
     ⚠️ PostgreSQL 
     ⚠️ Performance optimization and benchmarking
