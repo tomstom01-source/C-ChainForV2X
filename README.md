@@ -120,11 +120,12 @@ python src/main.py --help
     ✅ Certification of T via σS(T) = [d, σS(σU(h(d)))]
     ✅ Appending T into blocks as [n+1, σS(h(Tn)), σS(T)]
    
-### To Be Implemented
+### Scope for Further Work
 
     ⚠️ Checking blocks in chain for not just continuity, but also payload integrity via πS(σS(σU(h(d)))) ?= σU(h(d)) while allowing RSA-PSS for σU(h(d))
     ⚠️ UDB with CryptIDs
     ⚠️ Simulation of nodes via SUMO instead of loading transactions from a file
+    ⚠️ Private Messages
     ⚠️ Steps 4-5 of the TDBMS protocol (TC synchronization at cars)
     ⚠️ Concurrency control
     ⚠️ Verification of protocol and testing
