@@ -1,4 +1,4 @@
-# C-Chain for V2X - Requirements
+# C-ChainForV2X - Requirements
 
 # Install dependencies with:
 # pip install -r requirements.txt
@@ -6,4 +6,4 @@
 # Core cryptographic library for RSA operations, signatures, and key management
 cryptography>=41.0.0
 
-# Note: All other dependencies are part of Python's standard library:
+# Note: All other dependencies are part of Python's standard library
