@@ -1,6 +1,8 @@
 # C-ChainForV2X
 
-An initial implementation of the C-Chain system for secure logging and verification of V2X (Vehicle-to-Everything) telemetry, according to the protocol described in C-ChainPaper.pdf.
+An initial implementation of the C-Chain system for secure logging and verification of V2X (Vehicle-to-Everything) telemetry, according to the protocol described in:
+
+Prof. Rudolf Bayer, TU München (Sept. 2017). C-chain: a system for managing public and private ledgers, an alternative to blockchain. https://db.in.tum.de/research/projects/C-chain/C-chain-Scient.pdf (PDF in repo)
 
 ## Overview
 
