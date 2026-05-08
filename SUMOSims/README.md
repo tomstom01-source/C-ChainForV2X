@@ -9,7 +9,7 @@ The SUMOSims folder provides realistic traffic simulation environments that can 
 - Validate V2X communication protocols
 - Analyze and benchmark transaction processing in vehicular networks
 
-![SUMO Screenshot](assets/images/SUMO_example_screenshot.png)
+![SUMO Screenshot](../assets/images/SUMO_example_screenshot.png)
 
 ## 📁 Current Scenarios
 
@@ -22,7 +22,7 @@ A four-way traffic-light controlled intersection scenario from real-world OSM ma
 ```powershell
 # Clone the repository (if not already done)
 git clone <repository-url>
-cd CCV2Xcode/SUMOSims
+cd SUMOSims
 
 # Install Python dependencies
 pip install -r requirements.txt
