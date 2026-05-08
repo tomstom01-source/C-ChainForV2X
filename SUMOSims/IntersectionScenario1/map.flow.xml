@@ -1,0 +1,23 @@
+<routes>
+    <vType id="v2x_car" accel="2.6" decel="4.5" sigma="0.5" length="5" minGap="2.5" maxSpeed="13.89"/>
+
+    <flow id="f_e_to_n" type="v2x_car" begin="0" end="3600" probability="0.1" from="1431652045#0" to="1430565997" departLane="best" departSpeed="max"/>
+    <flow id="f_e_to_e" type="v2x_car" begin="0" end="3600" probability="0.1" from="1431652045#0" to="501841158#0" departLane="best" departSpeed="max"/>
+    <flow id="f_e_to_w" type="v2x_car" begin="0" end="3600" probability="0.1" from="1431652045#0" to="501841155" departLane="best" departSpeed="max"/>
+    <flow id="f_e_to_s" type="v2x_car" begin="0" end="3600" probability="0.1" from="1431652045#0" to="1134821475#2" departLane="best" departSpeed="max"/>
+    
+    <flow id="f_s_to_n" type="v2x_car" begin="0" end="3600" probability="0.2" from="1430565981#0" to="1430565997" departLane="best" departSpeed="max"/>
+    <flow id="f_s_to_e" type="v2x_car" begin="0" end="3600" probability="0.2" from="1430565981#0" to="501841158#0" departLane="best" departSpeed="max"/>
+    <flow id="f_s_to_w" type="v2x_car" begin="0" end="3600" probability="0.2" from="1430565981#0" to="501841155" departLane="best" departSpeed="max"/>
+    <flow id="f_s_to_s" type="v2x_car" begin="0" end="3600" probability="0.2" from="1430565981#0" to="1134821475#2" departLane="best" departSpeed="max"/>
+
+    <flow id="f_w_to_n"  type="v2x_car" begin="0" end="3600" probability="0.2" from="48967408#0" to="1430565997" departLane="best" departSpeed="max"/>
+    <flow id="f_w_to_e"  type="v2x_car" begin="0" end="3600" probability="0.2" from="48967408#0" to="501841158#0" departLane="best" departSpeed="max"/>
+    <flow id="f_w_to_w"  type="v2x_car" begin="0" end="3600" probability="0.2" from="48967408#0" to="501841155" departLane="best" departSpeed="max"/>
+    <flow id="f_w_to_s"  type="v2x_car" begin="0" end="3600" probability="0.2" from="48967408#0" to="1134821475#2" departLane="best" departSpeed="max"/>
+    
+    <flow id="f_n_to_n"  type="v2x_car" begin="0" end="3600" probability="0.5" from="1134821474#0" to="1430565997" departLane="best" departSpeed="max"/>
+    <flow id="f_n_to_e"  type="v2x_car" begin="0" end="3600" probability="0.5" from="1134821474#0" to="501841158#0" departLane="best" departSpeed="max"/>
+    <flow id="f_n_to_w"  type="v2x_car" begin="0" end="3600" probability="0.5" from="1134821474#0" to="501841155" departLane="best" departSpeed="max"/>
+    <flow id="f_n_to_s"  type="v2x_car" begin="0" end="3600" probability="0.5" from="1134821474#0" to="1134821475#2" departLane="best" departSpeed="max"/>
+</routes>

@@ -1,0 +1,17 @@
+<configuration>
+    <input>
+        <net-file value="map.net.xml"/>
+        <route-files value="map.rou.xml"/>
+    </input>
+    <processing> 
+        <time-to-teleport value="-1"/>
+        <scale value="1"/>
+    </processing>
+    <time>
+        <begin value="0"/>
+        <end value="3600"/>
+    </time>
+    <gui_only>
+        <gui-settings-file value="viewport.xml"/>
+    </gui_only>
+</configuration>
