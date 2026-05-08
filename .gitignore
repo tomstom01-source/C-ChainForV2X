@@ -2,6 +2,16 @@
 T2_exp/
 generated_data/
 
+# SUMO simulation files
+SUMOSims/*/*.net.xml
+SUMOSims/*/*.rou.xml
+SUMOSims/*/*.rou.alt.xml
+SUMOSims/*/*.trips.xml
+SUMOSims/*/*.png
+SUMOSims/*/*.jpg
+SUMOSims/*/*.log
+SUMOSims/*/tripinfo.xml
+
 
 # Standard gitignore:
 # Byte-compiled / optimized / DLL files

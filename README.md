@@ -1,4 +1,4 @@
-# C-ChainForV2X
+# C-ChainForV2X (Work in Progress)
 
 An initial implementation of the C-Chain system for secure logging and verification of V2X (Vehicle-to-Everything) telemetry, according to the protocol described in:
 
@@ -134,3 +134,12 @@ python src/main.py --help
     ⚠️ Atomicity
     ⚠️ PostgreSQL 
     ⚠️ Performance optimization and benchmarking
+
+## Attributions
+
+Protocol: Prof. Rudolf Bayer, TU München (Sept. 2017). C-chain: a system for managing public and private ledgers, an alternative to blockchain. https://db.in.tum.de/research/projects/C-chain/C-chain-Scient.pdf
+
+Simulation Scenarios: Eclipse SUMO (Simulation of Urban MObility).
+Citation: Lopez, P. A., Behrisch, M., Walz, L. S., Erdmann, J., Flötteröd, Y., Hilbrich, R., Lücken, L., Rummel, J., Wagner, P., & Wießner, E. (2018). Microscopic Traffic Simulation using SUMO. 21st International Conference on Intelligent Transportation Systems (ITSC). http://sumo.dlr.de
+
+Maps for Simulation Scenarios: Data © OpenStreetMap contributors, available under the Open Database License. https://www.openstreetmap.org/copyright
