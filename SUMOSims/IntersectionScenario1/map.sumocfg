@@ -2,10 +2,12 @@
     <input>
         <net-file value="map.net.xml"/>
         <route-files value="map.rou.xml"/>
+        <additional-files value="rsu.add.xml"/>
     </input>
     <processing> 
         <time-to-teleport value="-1"/>
         <scale value="1"/>
+        <step-length value="0.05"/>
     </processing>
     <time>
         <begin value="0"/>

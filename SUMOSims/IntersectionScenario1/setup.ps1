@@ -15,3 +15,4 @@ if ($LASTEXITCODE -ne 0) {
 }
 
 Write-Host "Setup Complete. You can now run: sumo-gui -c map.sumocfg" -ForegroundColor Green
+Write-Host "Or run the RSU listener: python rsu_listener.py" -ForegroundColor Cyan

@@ -57,5 +57,20 @@ sumo-gui -c map.sumocfg
 ## 🔍 Integration with C-Chain
 
 ### V2X Communication Setup
-To integrate with C-Chain V2X implementations:
-TBD: TraCI Connection
+
+The scenario includes an RSU (Roadside Unit) listener (red dot) that monitors vehicles entering its communication range (transparent red circle):
+
+**RSU Listener (`rsu_listener.py`)**
+- Event-driven TraCI script that detects vehicles entering RSU radius
+- Extracts vehicle telemetry: ID, speed, position (lat/lon or x/y), timestamp
+- Configurable RSU position and listening range (via `rsu.add.xml`)
+
+**Usage:**
+```powershell
+# Ensure SUMO simulation is configured with RSU
+# Run the listener (starts SUMO GUI automatically)
+python rsu_listener.py
+```
+
+**Integration with C-Chain:**
+TBD
