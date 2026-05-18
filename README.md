@@ -21,7 +21,7 @@ Unlike traditional blockchains that suffer from probabilistic finality, high lat
 Features discussed so far have only been partially implemented. Details below, however, describe the current state of implementation.
 
 
-## Architecture & Control Flow
+## Architecture
 
 ### Components Summary
 
@@ -47,23 +47,8 @@ Features discussed so far have only been partially implemented. Details below, h
    - `generated_data/mock_transactions.json`: Generated V2X transaction data
    - `generated_data/V2X_chain.db`: SQLite database containing the chain
 
-
-### Flow Summary
-
-1. **Transaction Generation**:  V2X transactions containing:
-   - Vehicle ID
-   - GPS coordinates (lat, lon)
-   - Velocity
-   - Timestamp
-
-2. **Chain Creation by TDBMS**:
-   - Verification of vehicle signatures using respective public keys
-   - Signing of the transaction with TDBMS private key
-   - Creation of a new block linked to the previous block in the existing chain
-
-3. **Chain Display & Verification**:
-   - Console display of first and last 5 blocks
-   - Verification of links between blocks 
+**Simulation for Benchmarking**
+   - Realistic and configurable simulation using SUMO to model traffic dynamics with adjustable parameters like volume and flow. Details in the [SUMOSims directory](./SUMOSims).
 
 ### Block Structure
    
@@ -124,9 +109,9 @@ python src/main.py --help
    
 ### Scope for Further Work
 
-    ⚠️ Checking blocks in chain for not just continuity, but also payload integrity via πS(σS(σU(h(d)))) ?= σU(h(d)) while allowing RSA-PSS for σU(h(d))
+    ⚠️ Checking blocks in chain for not just continuity, but also payload integrity via πS(σS(σU(h(d)))) ?= σU(h(d))
+    ⚠️ Switching to Ed25519 signature scheme implemented in Rust
     ⚠️ UDB with CryptIDs
-    ⚠️ Simulation of nodes via SUMO instead of loading transactions from a file
     ⚠️ Private Messages
     ⚠️ Steps 4-5 of the TDBMS protocol (TC synchronization at cars)
     ⚠️ Concurrency control
