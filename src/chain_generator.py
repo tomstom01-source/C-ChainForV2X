@@ -3,6 +3,7 @@ from datetime import datetime
 import json
 import base64
 import os
+import sys
 from cryptography.hazmat.primitives import serialization
 from cryptography.hazmat.primitives.asymmetric import rsa
 from utilities.tdb_utilities import setup_tdb, get_last_block
@@ -85,6 +86,99 @@ def process_transactions(transactions_filename, connection, tdbms_key_pair):
 
     if skipped_transactions > 0:
         print(f"Skipped {skipped_transactions} incompatible transactions.")           
+    
+    connection.commit()
+
+
+def process_transactions_alt(connection, tdbms_key_pair):
+    """
+    Alternative transaction processor that consumes vehicle telemetry data piped from rsu_listener_alt.py.
+    Reads JSON data from stdin and processes each vehicle entry event.
+    Converts vehicle telemetry to transaction format and books into the C-Chain.
+    """
+    skipped_entries = 0
+    processed_entries = 0
+    
+    tdbms_private_key = serialization.load_pem_private_key(tdbms_key_pair["private_key"].encode('utf-8'), password=None)
+    cursor = connection.cursor()
+    
+    # Load vehicle public keys
+    with open("generated_data/keys.json", "r") as f:
+        keys = json.load(f)
+
+    # Create a genesis block if chain doesn't exist yet
+    cursor.execute("SELECT COUNT(*) FROM transaction_blocks")
+    if cursor.fetchone()[0] == 0:
+        print("Creating genesis block.")
+        d = f"Genesis block created at {datetime.fromtimestamp(time.time()).strftime("%Y-%m-%dT%H:%M:%S.%f")} by owner of public key {tdbms_key_pair['public_key']}"
+        genesis_block = {"signed_prev_block_hash": "0" * 64,
+                         "signed_transaction": json.dumps({"data": d, 
+                                        "signature": base64.b64encode(sign_hashed_data(private_key=tdbms_private_key, 
+                                                        hashed_data=sha256_hash(d))).decode('utf-8')}, 
+                                        sort_keys=True, separators=(',', ':'))}
+        cursor.execute('''
+            INSERT INTO transaction_blocks (signed_prev_block_hash, signed_transaction) 
+                       VALUES (?, ?)
+        ''', (genesis_block["signed_prev_block_hash"], genesis_block["signed_transaction"]))
+        connection.commit()
+
+    print("Reading vehicle transactions from stdin...")
+    
+    # Read JSON lines from stdin (piped from rsu_listener_alt.py)
+    for line in sys.stdin:
+        line = line.strip()
+        if not line:
+            continue
+        
+        try:
+            vehicle_data = json.loads(line)
+            
+            
+            # Get public key for this vehicle
+            public_key = get_public_key_for_id(keys=keys, id=data["id"])
+            if not public_key:
+                print(f"No public key found for vehicle with ID {data['id']}. Skipping.")
+                skipped_entries += 1
+                continue
+            
+            # In a real V2X scenario, the vehicle would sign its own telemetry.
+            # For this simulation, we create a mock signature using the vehicle's public key hash
+            # This represents the vehicle's signature σU(h(d))
+            data_str = json.dumps(data, sort_keys=True, separators=(',', ':'))
+            mock_signature = sha256_hash(data_str + str(public_key))
+            
+            # Signing by TDBMS: σS(h(σU(h(d))))
+            # tdbms_signed_transaction = σS(T) = {d, σS(h(σU(h(d))))}
+            tdbms_signed_transaction = {
+                "data": data,
+                "signature": base64.b64encode(sign_hashed_data(private_key=tdbms_private_key, 
+                                                hashed_data=sha256_hash(mock_signature))).decode('utf-8')
+            }
+            
+            last_block = get_last_block(cursor=cursor)
+            
+            cursor.execute('''
+                INSERT INTO transaction_blocks (signed_prev_block_hash, signed_transaction) 
+                           VALUES (?, ?)
+            ''', (base64.b64encode(sign_hashed_data(private_key=tdbms_private_key, 
+                                hashed_data=sha256_hash(last_block))).decode('utf-8'),
+                    json.dumps(tdbms_signed_transaction, sort_keys=True, separators=(',', ':'))))
+            
+            processed_entries += 1
+            print(f"Booked vehicle entry: ID={data['id']}, Speed={data['speed']:.2f} km/h, Timestamp={data['timestamp']}")
+            
+        except json.JSONDecodeError as e:
+            print(f"Failed to parse JSON line: {e}")
+            skipped_entries += 1
+            continue
+        except Exception as e:
+            print(f"Error processing vehicle entry: {e}")
+            skipped_entries += 1
+            continue
+
+    print(f"Processed {processed_entries} vehicle entries from stdin.")
+    if skipped_entries > 0:
+        print(f"Skipped {skipped_entries} invalid entries.")
     
     connection.commit()
 
